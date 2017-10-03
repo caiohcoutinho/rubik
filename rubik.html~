@@ -12,28 +12,6 @@
 	<body>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/87/three.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
-		<div class="controls">
-			<a href="javascript:void(0)" onclick="left();">Left</a>
-			<a href="javascript:void(0)" onclick="right();">Right</a>
-			<a href="javascript:void(0)" onclick="up();">Up</a>
-			<a href="javascript:void(0)" onclick="down();">Down</a>
-			<a href="javascript:void(0)" onclick="turnR();">R</a>
-			<a href="javascript:void(0)" onclick="turnRDash();">R'</a>
-			<a href="javascript:void(0)" onclick="turnL();">L</a>
-			<a href="javascript:void(0)" onclick="turnLDash();">L'</a>
-			<a href="javascript:void(0)" onclick="turnU();">U</a>
-			<a href="javascript:void(0)" onclick="turnUDash();">U'</a>
-			<a href="javascript:void(0)" onclick="turnD();">D</a>
-			<a href="javascript:void(0)" onclick="turnDDash();">D'</a>
-			<a href="javascript:void(0)" onclick="turnF();">F</a>
-			<a href="javascript:void(0)" onclick="turnFDash();">F'</a>
-			<a href="javascript:void(0)" onclick="turnB();">B</a>
-			<a href="javascript:void(0)" onclick="turnBDash();">B'</a>
-			<input type="text" id="codeInput"></input>
-			<a href="javascript:void(0)" onclick="execute();">Execute</a>
-			<a href="javascript:void(0)" onclick="scramble();">Scramble</a>
-		</div>
-		<div id="cubeDiv"></div>
 		<script>
 			var scene = new THREE.Scene();
 			var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
@@ -430,5 +408,27 @@
 			}
 
 		</script>
+		<div class="controls">
+			<a href="javascript:void(0)" onclick="left();">Left</a>
+			<a href="javascript:void(0)" onclick="right();">Right</a>
+			<a href="javascript:void(0)" onclick="up();">Up</a>
+			<a href="javascript:void(0)" onclick="down();">Down</a>
+			<a href="javascript:void(0)" onclick="turnR();">R</a>
+			<a href="javascript:void(0)" onclick="turnRDash();">R'</a>
+			<a href="javascript:void(0)" onclick="turnL();">L</a>
+			<a href="javascript:void(0)" onclick="turnLDash();">L'</a>
+			<a href="javascript:void(0)" onclick="turnU();">U</a>
+			<a href="javascript:void(0)" onclick="turnUDash();">U'</a>
+			<a href="javascript:void(0)" onclick="turnD();">D</a>
+			<a href="javascript:void(0)" onclick="turnDDash();">D'</a>
+			<a href="javascript:void(0)" onclick="turnF();">F</a>
+			<a href="javascript:void(0)" onclick="turnFDash();">F'</a>
+			<a href="javascript:void(0)" onclick="turnB();">B</a>
+			<a href="javascript:void(0)" onclick="turnBDash();">B'</a>
+			<input type="text" id="codeInput"></input>
+			<a href="javascript:void(0)" onclick="execute();">Execute</a>
+			<a href="javascript:void(0)" onclick="scramble();">Scramble</a>
+		</div>
+		<div id="cubeDiv"></div>
 	</body>
 </html>
