@@ -2,36 +2,407 @@
 <html>
 	<head>
 		<meta charset=utf-8>
-		<title>My first three.js app</title>
+		<title>Rubik</title>
 		<style>
 			body { margin: 0; }
 			canvas { width: 100%; height: 100% }
+			div.controls { width: 100%; height: 10% }
 		</style>
 	</head>
 	<body>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/87/three.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
 		<script>
 			var scene = new THREE.Scene();
 			var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 
 			var renderer = new THREE.WebGLRenderer();
-			renderer.setSize( window.innerWidth, window.innerHeight );
+			renderer.setSize( window.innerWidth, window.innerHeight*0.9 );
 			document.body.appendChild( renderer.domElement );
 
-			var geometry = new THREE.BoxGeometry( 1, 1, 1 );
-			var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-			var cube = new THREE.Mesh( geometry, material );
-			scene.add( cube );
+			var DIFF = 1;
+			var DIFFP = DIFF*1.5;
 
-			camera.position.x = 5;
-			camera.position.y = 5;
-			camera.position.z = 5;
-			camera.lookAt(new THREE.Vector3(0, 0, 0));
+			var RED = 0xff0000;
+			var WHITE = 0xffffff;
+			var GREEN = 0x008000;
+			var BLUE = 0x0000ff;
+			var ORANGE = 0x996300;
+			var YELLOW = 0xffff00;
+
+			var createFace = function(toScene, x, y, z, color, rx, ry, rz){
+				var geometry = new THREE.PlaneGeometry( 1, 1);
+				var material = new THREE.MeshBasicMaterial( { color: color } );
+				var piece = new THREE.Mesh( geometry, material );
+
+				var eGeometry = new THREE.EdgesGeometry( piece.geometry );
+				var eMaterial = new THREE.LineBasicMaterial( { color: 0x5c0000, linewidth: 2 } );
+				var edges = new THREE.LineSegments( eGeometry , eMaterial );
+				piece.add( edges );
+
+				toScene.add( piece );
+
+				piece.position.x = x;
+				piece.position.y = y;
+				piece.position.z = z;
+
+				piece.rotation.x = rx;
+				piece.rotation.y = ry;
+				piece.rotation.z = rz;
+
+				return piece;
+			}
+
+			var createMiddlePiece = function(toScene, x, y, z, color1, rx, ry, rz){
+				return [createFace(toScene, x*1.5, y*1.5, z*1.5, color1, rx, ry, rz)];
+			}
+
+			var createEdge = function(toScene, x1, y1, z1, color1, rx1, ry1, rz1, x2, y2, z2, color2, rx2, ry2, rz2){
+				return [
+				createFace(toScene, x1, y1, z1, color1, rx1, ry1, rz1),
+				createFace(toScene, x2, y2, z2, color2, rx2, ry2, rz2)];
+			}
+
+			var createCorner = function(toScene, x1, y1, z1, color1, rx1, ry1, rz1, x2, y2, z2, color2, rx2, ry2, rz2, x3, y3, z3, color3, rx3, ry3, rz3){
+				return [
+				createFace(toScene, x1, y1, z1, color1, rx1, ry1, rz1),
+				createFace(toScene, x2, y2, z2, color2, rx2, ry2, rz2),
+				createFace(toScene, x3, y3, z3, color3, rx3, ry3, rz3)];
+			}
+
+			var HALF = Math.PI/2;
+
+			//middle
+			var m1 = createMiddlePiece(scene, 0, -DIFF, 0, YELLOW, HALF, 0, 0);
+			var m2 = createMiddlePiece(scene, -DIFF, 0, 0, GREEN, 0, -HALF, 0);
+			var m3 = createMiddlePiece(scene, DIFF, 0, 0, BLUE, 0, HALF, 0);
+			var m4 = createMiddlePiece(scene, 0, 0, DIFF, RED, 0, 0, 0);
+			var m5 = createMiddlePiece(scene, 0, 0, -DIFF, ORANGE, 0, -2*HALF, 0);
+			var m6 = createMiddlePiece(scene, 0, DIFF, 0, WHITE, -HALF, 0, 0);
+
+			//edges
+			var e01 = createEdge(scene, DIFFP, DIFF, 0, BLUE, 0, HALF, 0, DIFF, DIFFP, 0, WHITE, -HALF, 0, 0);
+			var e02 = createEdge(scene, -DIFFP, DIFF, 0, GREEN, 0, -HALF, 0, -DIFF, DIFFP, 0, WHITE, -HALF, 0, 0);
+			var e03 = createEdge(scene, 0, DIFF, DIFFP, RED, 0, 0, 0, 0, DIFFP, DIFF, WHITE, -HALF, 0, 0);
+			var e04 = createEdge(scene, 0, DIFF, -DIFFP, ORANGE, 0, -2*HALF, 0, 0, DIFFP, -DIFF, WHITE, -HALF, 0, 0);
+			var e05 = createEdge(scene, DIFFP, 0, DIFF, BLUE, 0, HALF, 0, DIFF, 0, DIFFP, RED, 0, 0, 0);
+			var e06 = createEdge(scene, DIFFP, 0, -DIFF, BLUE, 0, HALF, 0, DIFF, 0, -DIFFP, ORANGE, 0, -2*HALF, 0);
+			var e07 = createEdge(scene, -DIFFP, 0, -DIFF, GREEN, 0, -HALF, 0, -DIFF, 0, -DIFFP, ORANGE, 0, -2*HALF, 0);
+			var e08 = createEdge(scene, -DIFFP, 0, DIFF, GREEN, 0, -HALF, 0, -DIFF, 0, DIFFP, RED, 0, 0, 0);
+			var e09 = createEdge(scene, DIFFP, -DIFF, 0, BLUE, 0, HALF, 0, DIFF, -DIFFP, 0, YELLOW, HALF, 0, 0);
+			var e10 = createEdge(scene, 0, -DIFF, -DIFFP, ORANGE, 0, -2*HALF, 0, 0, -DIFFP, -DIFF, YELLOW, HALF, 0, 0);
+			var e11 = createEdge(scene, -DIFFP, -DIFF, 0, GREEN, 0, -HALF, 0, -DIFF, -DIFFP, 0, YELLOW, HALF, 0, 0);
+			var e12 = createEdge(scene, 0, -DIFF, DIFFP, RED, 0, 0, 0, 0, -DIFFP, DIFF, YELLOW, HALF, 0, 0);
+
+			//corners
+			var c1 = createCorner(scene, DIFF, DIFFP, DIFF, WHITE, -HALF, 0, 0, DIFFP, DIFF, DIFF, BLUE, 0, HALF, 0, DIFF, DIFF, DIFFP, RED, 0, 0, 0);
+			var c2 = createCorner(scene, DIFF, DIFFP, -DIFF, WHITE, -HALF, 0, 0, DIFFP, DIFF, -DIFF, BLUE, 0, HALF, 0, DIFF, DIFF, -DIFFP, ORANGE, 0, -2*HALF, 0);
+			var c3 = createCorner(scene, -DIFF, DIFFP, -DIFF, WHITE, -HALF, 0, 0, -DIFFP, DIFF, -DIFF, GREEN, 0, -HALF, 0, -DIFF, DIFF, -DIFFP, ORANGE, 0, -2*HALF, 0);
+			var c4 = createCorner(scene, -DIFF, DIFFP, DIFF, WHITE, -HALF, 0, 0, -DIFFP, DIFF, DIFF, GREEN, 0, -HALF, 0, -DIFF, DIFF, DIFFP, RED, 0, 0, 0);
+			var c5 = createCorner(scene, DIFF, -DIFFP, DIFF, YELLOW, HALF, 0, 0, DIFFP, -DIFF, DIFF, BLUE, 0, HALF, 0, DIFF, -DIFF, DIFFP, RED, 0, 0, 0);
+			var c6 = createCorner(scene, DIFF, -DIFFP, -DIFF, YELLOW, HALF, 0, 0, DIFFP, -DIFF, -DIFF, BLUE, 0, HALF, 0, DIFF, -DIFF, -DIFFP, ORANGE, 0, -2*HALF, 0);
+			var c7 = createCorner(scene, -DIFF, -DIFFP, -DIFF, YELLOW, HALF, 0, 0, -DIFFP, -DIFF, -DIFF, GREEN, 0, -HALF, 0, -DIFF, -DIFF, -DIFFP, ORANGE, 0, -2*HALF, 0);
+			var c8 = createCorner(scene, -DIFF, -DIFFP, DIFF, YELLOW, HALF, 0, 0, -DIFFP, -DIFF, DIFF, GREEN, 0, -HALF, 0, -DIFF, -DIFF, DIFFP, RED, 0, 0, 0);
+
+			window.pieces = [
+				m1, m2, m3, m4, m5, m6,
+				e01, e02, e03, e04, e05, e06, e07, e08, e09, e10, e11, e12,
+				c1, c2, c3, c4, c5, c6, c7, c8
+			];
+
+			var calculateFaces = function(){
+				window.faceR = _.filter(window.pieces, function(piece){
+					return _.every(piece, function(part){
+						return part.position.x >= 0.5;
+					});
+				});
+				window.faceL = _.filter(window.pieces, function(piece){
+					return _.every(piece, function(part){
+						return part.position.x <= -0.5;
+					});
+				});
+				window.faceU = _.filter(window.pieces, function(piece){
+					return _.every(piece, function(part){
+						return part.position.y >= 0.5;
+					});
+				});
+				window.faceD = _.filter(window.pieces, function(piece){
+					return _.every(piece, function(part){
+						return part.position.y <= -0.5;
+					});
+				});
+				window.faceF = _.filter(window.pieces, function(piece){
+					return _.every(piece, function(part){
+						return part.position.z >= 0.5;
+					});
+				});
+				window.faceB = _.filter(window.pieces, function(piece){
+					return _.every(piece, function(part){
+						return part.position.z <= -0.5;
+					});
+				});
+			}
+
+			var X_AXIS = new THREE.Vector3(1,0,0);
+			var Y_AXIS = new THREE.Vector3(0,1,0);
+			var Z_AXIS = new THREE.Vector3(0,0,1);
+
+			function rotateAroundWorldAxis(object, axis, radians) {
+			    rotWorldMatrix = new THREE.Matrix4();
+			    rotWorldMatrix.makeRotationAxis(axis.normalize(), radians);
+			    rotWorldMatrix.multiply(object.matrix);
+			    object.matrix = rotWorldMatrix;
+			    object.rotation.setFromRotationMatrix(object.matrix);
+			}
+
+			calculateFaces();
+
+			window.alpha = Math.PI/4;
+			window.beta = Math.PI/4;
+
+			var RADIUS = 8;
+
+			window.fixCamera = function(){
+				var a = window.alpha;
+				var b = window.beta;
+				camera.position.x = RADIUS*Math.cos(b)*Math.cos(a);
+				camera.position.y = RADIUS*Math.sin(b);
+				camera.position.z = RADIUS*Math.cos(b)*Math.sin(a);
+				camera.lookAt(new THREE.Vector3(0, 0, 0));
+			}
+
+			window.fixCamera();
+
 			function animate() {
 				requestAnimationFrame( animate );
 				renderer.render( scene, camera );
 			}
 			animate();
+
+			var STEP = Math.PI/8;
+
+			left = function(){
+				window.alpha += STEP;
+				window.fixCamera();
+			}
+
+			right = function(){
+				window.alpha -= STEP;
+				window.fixCamera();
+			}
+
+			up = function(){
+				window.beta += STEP;
+				window.fixCamera();
+			}
+
+			down = function(){
+				window.beta -= STEP;
+				window.fixCamera();
+			}
+
+			turnR = function(){
+				_.each(window.faceR, function(piece){
+					_.each(piece, function(part){
+						rotateAroundWorldAxis(part, X_AXIS, -HALF);
+						var y = part.position.y;
+						var z = part.position.z;
+						part.position.y = z;
+						part.position.z = -y;
+					});
+				});
+				calculateFaces();
+			}
+
+			turnRDash = function(){
+				_.each(window.faceR, function(piece){
+					_.each(piece, function(part){
+						rotateAroundWorldAxis(part, X_AXIS, +HALF);
+						var y = part.position.y;
+						var z = part.position.z;
+						part.position.y = -z;
+						part.position.z = y;
+					});
+				});
+				calculateFaces();
+			}
+
+			turnL = function(){
+				_.each(window.faceL, function(piece){
+					_.each(piece, function(part){
+						rotateAroundWorldAxis(part, X_AXIS, +HALF);
+						var y = part.position.y;
+						var z = part.position.z;
+						part.position.y = -z;
+						part.position.z = y;
+					});
+				});
+				calculateFaces();
+			}
+
+			turnLDash = function(){
+				_.each(window.faceL, function(piece){
+					_.each(piece, function(part){
+						rotateAroundWorldAxis(part, X_AXIS, -HALF);
+						var y = part.position.y;
+						var z = part.position.z;
+						part.position.y = z;
+						part.position.z = -y;
+					});
+				});
+				calculateFaces();
+			}
+
+			turnU = function(){
+				_.each(window.faceU, function(piece){
+					_.each(piece, function(part){
+						rotateAroundWorldAxis(part, Y_AXIS, -HALF);
+						var x = part.position.x;
+						var z = part.position.z;
+						part.position.x = -z;
+						part.position.z = x;
+					});
+				});
+				calculateFaces();
+			}
+
+			turnUDash = function(){
+				_.each(window.faceU, function(piece){
+					_.each(piece, function(part){
+						rotateAroundWorldAxis(part, Y_AXIS, HALF);
+						var x = part.position.x;
+						var z = part.position.z;
+						part.position.x = z;
+						part.position.z = -x;
+					});
+				});
+				calculateFaces();
+			}
+
+			turnD = function(){
+				_.each(window.faceD, function(piece){
+					_.each(piece, function(part){
+						rotateAroundWorldAxis(part, Y_AXIS, HALF);
+						var x = part.position.x;
+						var z = part.position.z;
+						part.position.x = z;
+						part.position.z = -x;
+					});
+				});
+				calculateFaces();
+			}
+
+			turnDDash = function(){
+				_.each(window.faceD, function(piece){
+					_.each(piece, function(part){
+						rotateAroundWorldAxis(part, Y_AXIS, -HALF);
+						var x = part.position.x;
+						var z = part.position.z;
+						part.position.x = -z;
+						part.position.z = x;
+					});
+				});
+				calculateFaces();
+			}
+
+			turnF = function(){
+				_.each(window.faceF, function(piece){
+					_.each(piece, function(part){
+						rotateAroundWorldAxis(part, Z_AXIS, -HALF);
+						var x = part.position.x;
+						var y = part.position.y;
+						part.position.x = y;
+						part.position.y = -x;
+					});
+				});
+				calculateFaces();
+			}
+
+			turnFDash = function(){
+				_.each(window.faceF, function(piece){
+					_.each(piece, function(part){
+						rotateAroundWorldAxis(part, Z_AXIS, HALF);
+						var x = part.position.x;
+						var y = part.position.y;
+						part.position.x = -y;
+						part.position.y = x;
+					});
+				});
+				calculateFaces();
+			}
+
+			turnB = function(){
+				_.each(window.faceB, function(piece){
+					_.each(piece, function(part){
+						rotateAroundWorldAxis(part, Z_AXIS, HALF);
+						var x = part.position.x;
+						var y = part.position.y;
+						part.position.x = -y;
+						part.position.y = x;
+					});
+				});
+				calculateFaces();
+			}
+
+			turnBDash = function(){
+				_.each(window.faceB, function(piece){
+					_.each(piece, function(part){
+						rotateAroundWorldAxis(part, Z_AXIS, -HALF);
+						var x = part.position.x;
+						var y = part.position.y;
+						part.position.x = y;
+						part.position.y = -x;
+					});
+				});
+				calculateFaces();
+			}
+
+			var codeMap = {
+				"r": turnR,
+				"R" : turnRDash,
+				"l": turnL,
+				"L" : turnLDash,
+				"u": turnU,
+				"U" : turnUDash,
+				"d": turnD,
+				"D" : turnDDash,
+				"f": turnF,
+				"F" : turnFDash,
+				"b": turnB,
+				"B" : turnBDash,
+			}
+
+			var valid = [
+				"r", "R", "l", "L", "u", "U", "d", "D", "f", "F", "b", "B", "'"
+			];
+
+			execute = function(){
+				var code = document.getElementById('codeInput').value;
+				_.each(code, function(char){
+				 	codeMap[char]();
+				});
+			}
+
 		</script>
+		<div class="controls">
+			<a href="javascript:void(0)" onclick="left();">Left</a>
+			<a href="javascript:void(0)" onclick="right();">Right</a>
+			<a href="javascript:void(0)" onclick="up();">Up</a>
+			<a href="javascript:void(0)" onclick="down();">Down</a>
+			<a href="javascript:void(0)" onclick="turnR();">R</a>
+			<a href="javascript:void(0)" onclick="turnRDash();">R'</a>
+			<a href="javascript:void(0)" onclick="turnL();">L</a>
+			<a href="javascript:void(0)" onclick="turnLDash();">L'</a>
+			<a href="javascript:void(0)" onclick="turnU();">U</a>
+			<a href="javascript:void(0)" onclick="turnUDash();">U'</a>
+			<a href="javascript:void(0)" onclick="turnD();">D</a>
+			<a href="javascript:void(0)" onclick="turnDDash();">D'</a>
+			<a href="javascript:void(0)" onclick="turnF();">F</a>
+			<a href="javascript:void(0)" onclick="turnFDash();">F'</a>
+			<a href="javascript:void(0)" onclick="turnB();">B</a>
+			<a href="javascript:void(0)" onclick="turnBDash();">B'</a>
+			<input type="text" id="codeInput"></input>
+			<a href="javascript:void(0)" onclick="execute();">Execute</a>
+		</div>
 	</body>
 </html>
