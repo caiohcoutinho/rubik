@@ -32,25 +32,28 @@
 			<input type="text" id="codeInput"></input>
 			<a href="javascript:void(0)" onclick="execute();">Execute</a>
 			<a href="javascript:void(0)" onclick="scramble();">Scramble</a>
+			<a href="javascript:void(0)" onclick="class000();">Class 000</a>
+			<a href="javascript:void(0)" onclick="class001();">Class 001</a>
+			<a href="javascript:void(0)" onclick="class010();">Class 010</a>
+			<a href="javascript:void(0)" onclick="class011();">Class 011</a>
+			<a href="javascript:void(0)" onclick="class100();">Class 100</a>
+			<a href="javascript:void(0)" onclick="class101();">Class 101</a>
+			<a href="javascript:void(0)" onclick="class110();">Class 110</a>
+			<a href="javascript:void(0)" onclick="class111();">Class 111</a>
+			<a href="javascript:void(0)" onclick="class200();">Class 200</a>
+			<a href="javascript:void(0)" onclick="class201();">Class 201</a>
+			<a href="javascript:void(0)" onclick="class210();">Class 210</a>
+			<a href="javascript:void(0)" onclick="class211();">Class 211</a>
 		</div>
 		<div id="cubeDiv"></div>
 		<script>
 			var scene = new THREE.Scene();
+			window.scene = scene;
 			var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 
 			var renderer = new THREE.WebGLRenderer();
 			renderer.setSize( window.innerWidth, window.innerHeight*0.9 );
 			document.getElementById("cubeDiv").appendChild( renderer.domElement );
-
-			var DIFF = 1;
-			var DIFFP = DIFF*1.5;
-
-			var RED = 0xff0000;
-			var WHITE = 0xffffff;
-			var GREEN = 0x008000;
-			var BLUE = 0x0000ff;
-			var ORANGE = 0x996300;
-			var YELLOW = 0xffff00;
 
 			var createFace = function(toScene, x, y, z, color, rx, ry, rz){
 				var geometry = new THREE.PlaneGeometry( 1, 1);
@@ -75,6 +78,13 @@
 				return piece;
 			}
 
+			var clearScene = function(){
+				var scene = window.scene;
+				while(scene.children.length > 0){ 
+				    scene.remove(scene.children[0]); 
+				}
+			}
+
 			var createMiddlePiece = function(toScene, x, y, z, color1, rx, ry, rz){
 				return [createFace(toScene, x*1.5, y*1.5, z*1.5, color1, rx, ry, rz)];
 			}
@@ -92,45 +102,66 @@
 				createFace(toScene, x3, y3, z3, color3, rx3, ry3, rz3)];
 			}
 
-			var HALF = Math.PI/2;
+			HALF = Math.PI/2;
+			var createCube = function(scene, cornerOrientation, flippedEdge, swapPieces){
+				clearScene();
+				var DIFF = 1;
+				var DIFFP = DIFF*1.5;
 
-			//middle
-			var m1 = createMiddlePiece(scene, 0, -DIFF, 0, YELLOW, HALF, 0, 0);
-			var m2 = createMiddlePiece(scene, -DIFF, 0, 0, GREEN, 0, -HALF, 0);
-			var m3 = createMiddlePiece(scene, DIFF, 0, 0, BLUE, 0, HALF, 0);
-			var m4 = createMiddlePiece(scene, 0, 0, DIFF, RED, 0, 0, 0);
-			var m5 = createMiddlePiece(scene, 0, 0, -DIFF, ORANGE, 0, -2*HALF, 0);
-			var m6 = createMiddlePiece(scene, 0, DIFF, 0, WHITE, -HALF, 0, 0);
+				var RED = 0xff0000;
+				var WHITE = 0xffffff;
+				var GREEN = 0x008000;
+				var BLUE = 0x0000ff;
+				var ORANGE = 0x996300;
+				var YELLOW = 0xffff00;
 
-			//edges
-			var e01 = createEdge(scene, DIFFP, DIFF, 0, BLUE, 0, HALF, 0, DIFF, DIFFP, 0, WHITE, -HALF, 0, 0);
-			var e02 = createEdge(scene, -DIFFP, DIFF, 0, GREEN, 0, -HALF, 0, -DIFF, DIFFP, 0, WHITE, -HALF, 0, 0);
-			var e03 = createEdge(scene, 0, DIFF, DIFFP, RED, 0, 0, 0, 0, DIFFP, DIFF, WHITE, -HALF, 0, 0);
-			var e04 = createEdge(scene, 0, DIFF, -DIFFP, ORANGE, 0, -2*HALF, 0, 0, DIFFP, -DIFF, WHITE, -HALF, 0, 0);
-			var e05 = createEdge(scene, DIFFP, 0, DIFF, BLUE, 0, HALF, 0, DIFF, 0, DIFFP, RED, 0, 0, 0);
-			var e06 = createEdge(scene, DIFFP, 0, -DIFF, BLUE, 0, HALF, 0, DIFF, 0, -DIFFP, ORANGE, 0, -2*HALF, 0);
-			var e07 = createEdge(scene, -DIFFP, 0, -DIFF, GREEN, 0, -HALF, 0, -DIFF, 0, -DIFFP, ORANGE, 0, -2*HALF, 0);
-			var e08 = createEdge(scene, -DIFFP, 0, DIFF, GREEN, 0, -HALF, 0, -DIFF, 0, DIFFP, RED, 0, 0, 0);
-			var e09 = createEdge(scene, DIFFP, -DIFF, 0, BLUE, 0, HALF, 0, DIFF, -DIFFP, 0, YELLOW, HALF, 0, 0);
-			var e10 = createEdge(scene, 0, -DIFF, -DIFFP, ORANGE, 0, -2*HALF, 0, 0, -DIFFP, -DIFF, YELLOW, HALF, 0, 0);
-			var e11 = createEdge(scene, -DIFFP, -DIFF, 0, GREEN, 0, -HALF, 0, -DIFF, -DIFFP, 0, YELLOW, HALF, 0, 0);
-			var e12 = createEdge(scene, 0, -DIFF, DIFFP, RED, 0, 0, 0, 0, -DIFFP, DIFF, YELLOW, HALF, 0, 0);
 
-			//corners
-			var c1 = createCorner(scene, DIFF, DIFFP, DIFF, WHITE, -HALF, 0, 0, DIFFP, DIFF, DIFF, BLUE, 0, HALF, 0, DIFF, DIFF, DIFFP, RED, 0, 0, 0);
-			var c2 = createCorner(scene, DIFF, DIFFP, -DIFF, WHITE, -HALF, 0, 0, DIFFP, DIFF, -DIFF, BLUE, 0, HALF, 0, DIFF, DIFF, -DIFFP, ORANGE, 0, -2*HALF, 0);
-			var c3 = createCorner(scene, -DIFF, DIFFP, -DIFF, WHITE, -HALF, 0, 0, -DIFFP, DIFF, -DIFF, GREEN, 0, -HALF, 0, -DIFF, DIFF, -DIFFP, ORANGE, 0, -2*HALF, 0);
-			var c4 = createCorner(scene, -DIFF, DIFFP, DIFF, WHITE, -HALF, 0, 0, -DIFFP, DIFF, DIFF, GREEN, 0, -HALF, 0, -DIFF, DIFF, DIFFP, RED, 0, 0, 0);
-			var c5 = createCorner(scene, DIFF, -DIFFP, DIFF, YELLOW, HALF, 0, 0, DIFFP, -DIFF, DIFF, BLUE, 0, HALF, 0, DIFF, -DIFF, DIFFP, RED, 0, 0, 0);
-			var c6 = createCorner(scene, DIFF, -DIFFP, -DIFF, YELLOW, HALF, 0, 0, DIFFP, -DIFF, -DIFF, BLUE, 0, HALF, 0, DIFF, -DIFF, -DIFFP, ORANGE, 0, -2*HALF, 0);
-			var c7 = createCorner(scene, -DIFF, -DIFFP, -DIFF, YELLOW, HALF, 0, 0, -DIFFP, -DIFF, -DIFF, GREEN, 0, -HALF, 0, -DIFF, -DIFF, -DIFFP, ORANGE, 0, -2*HALF, 0);
-			var c8 = createCorner(scene, -DIFF, -DIFFP, DIFF, YELLOW, HALF, 0, 0, -DIFFP, -DIFF, DIFF, GREEN, 0, -HALF, 0, -DIFF, -DIFF, DIFFP, RED, 0, 0, 0);
+				//middle
+				var m1 = createMiddlePiece(scene, 0, -DIFF, 0, YELLOW, HALF, 0, 0);
+				var m2 = createMiddlePiece(scene, -DIFF, 0, 0, GREEN, 0, -HALF, 0);
+				var m3 = createMiddlePiece(scene, DIFF, 0, 0, BLUE, 0, HALF, 0);
+				var m4 = createMiddlePiece(scene, 0, 0, DIFF, RED, 0, 0, 0);
+				var m5 = createMiddlePiece(scene, 0, 0, -DIFF, ORANGE, 0, -2*HALF, 0);
+				var m6 = createMiddlePiece(scene, 0, DIFF, 0, WHITE, -HALF, 0, 0);
 
-			window.pieces = [
-				m1, m2, m3, m4, m5, m6,
-				e01, e02, e03, e04, e05, e06, e07, e08, e09, e10, e11, e12,
-				c1, c2, c3, c4, c5, c6, c7, c8
-			];
+				//edges
+				var e01 = createEdge(scene, DIFFP, DIFF, 0, BLUE, 0, HALF, 0, DIFF, DIFFP, 0, WHITE, -HALF, 0, 0);
+				var e02 = createEdge(scene, -DIFFP, DIFF, 0, GREEN, 0, -HALF, 0, -DIFF, DIFFP, 0, WHITE, -HALF, 0, 0);
+				var e03 = createEdge(scene, 0, DIFF, DIFFP, RED, 0, 0, 0, 0, DIFFP, DIFF, WHITE, -HALF, 0, 0);
+				if(flippedEdge == 0) var e04 = createEdge(scene, 0, DIFF, -DIFFP, ORANGE, 0, -2*HALF, 0, 0, DIFFP, -DIFF, WHITE, -HALF, 0, 0);
+				if(flippedEdge == 1) var e04 = createEdge(scene, 0, DIFF, -DIFFP, WHITE, 0, -2*HALF, 0, 0, DIFFP, -DIFF, ORANGE, -HALF, 0, 0);
+				var e05 = createEdge(scene, DIFFP, 0, DIFF, BLUE, 0, HALF, 0, DIFF, 0, DIFFP, RED, 0, 0, 0);
+				var e06 = createEdge(scene, DIFFP, 0, -DIFF, BLUE, 0, HALF, 0, DIFF, 0, -DIFFP, ORANGE, 0, -2*HALF, 0);
+				var e07 = createEdge(scene, -DIFFP, 0, -DIFF, GREEN, 0, -HALF, 0, -DIFF, 0, -DIFFP, ORANGE, 0, -2*HALF, 0);
+				var e08 = createEdge(scene, -DIFFP, 0, DIFF, GREEN, 0, -HALF, 0, -DIFF, 0, DIFFP, RED, 0, 0, 0);
+				var e09 = createEdge(scene, DIFFP, -DIFF, 0, BLUE, 0, HALF, 0, DIFF, -DIFFP, 0, YELLOW, HALF, 0, 0);
+				var e10 = createEdge(scene, 0, -DIFF, -DIFFP, ORANGE, 0, -2*HALF, 0, 0, -DIFFP, -DIFF, YELLOW, HALF, 0, 0);
+				var e11 = createEdge(scene, -DIFFP, -DIFF, 0, GREEN, 0, -HALF, 0, -DIFF, -DIFFP, 0, YELLOW, HALF, 0, 0);
+				var e12 = createEdge(scene, 0, -DIFF, DIFFP, RED, 0, 0, 0, 0, -DIFFP, DIFF, YELLOW, HALF, 0, 0);
+
+				//corners
+				if(swapPieces == 0) var c1 = createCorner(scene, DIFF, DIFFP, DIFF, WHITE, -HALF, 0, 0, DIFFP, DIFF, DIFF, BLUE, 0, HALF, 0, DIFF, DIFF, DIFFP, RED, 0, 0, 0);
+				if(swapPieces == 1) var c1 = createCorner(scene, DIFF, DIFFP, DIFF, WHITE, -HALF, 0, 0, DIFFP, DIFF, DIFF, ORANGE, 0, HALF, 0, DIFF, DIFF, DIFFP, BLUE, 0, 0, 0);
+				if(swapPieces == 0) var c2 = createCorner(scene, DIFF, DIFFP, -DIFF, WHITE, -HALF, 0, 0, DIFFP, DIFF, -DIFF, BLUE, 0, HALF, 0, DIFF, DIFF, -DIFFP, ORANGE, 0, -2*HALF, 0);
+				if(swapPieces == 1) var c2 = createCorner(scene, DIFF, DIFFP, -DIFF, WHITE, -HALF, 0, 0, DIFFP, DIFF, -DIFF, RED, 0, HALF, 0, DIFF, DIFF, -DIFFP, BLUE, 0, -2*HALF, 0);
+
+				if(cornerOrientation == 0) var c3 = createCorner(scene, -DIFF, DIFFP, -DIFF, WHITE, -HALF, 0, 0, -DIFFP, DIFF, -DIFF, GREEN, 0, -HALF, 0, -DIFF, DIFF, -DIFFP, ORANGE, 0, -2*HALF, 0);
+				if(cornerOrientation == 1) var c3 = createCorner(scene, -DIFF, DIFFP, -DIFF, ORANGE, -HALF, 0, 0, -DIFFP, DIFF, -DIFF, WHITE, 0, -HALF, 0, -DIFF, DIFF, -DIFFP, GREEN, 0, -2*HALF, 0);
+				if(cornerOrientation == 2) var c3 = createCorner(scene, -DIFF, DIFFP, -DIFF, GREEN, -HALF, 0, 0, -DIFFP, DIFF, -DIFF, ORANGE, 0, -HALF, 0, -DIFF, DIFF, -DIFFP, WHITE, 0, -2*HALF, 0);
+				var c4 = createCorner(scene, -DIFF, DIFFP, DIFF, WHITE, -HALF, 0, 0, -DIFFP, DIFF, DIFF, GREEN, 0, -HALF, 0, -DIFF, DIFF, DIFFP, RED, 0, 0, 0);
+				var c5 = createCorner(scene, DIFF, -DIFFP, DIFF, YELLOW, HALF, 0, 0, DIFFP, -DIFF, DIFF, BLUE, 0, HALF, 0, DIFF, -DIFF, DIFFP, RED, 0, 0, 0);
+				var c6 = createCorner(scene, DIFF, -DIFFP, -DIFF, YELLOW, HALF, 0, 0, DIFFP, -DIFF, -DIFF, BLUE, 0, HALF, 0, DIFF, -DIFF, -DIFFP, ORANGE, 0, -2*HALF, 0);
+				var c7 = createCorner(scene, -DIFF, -DIFFP, -DIFF, YELLOW, HALF, 0, 0, -DIFFP, -DIFF, -DIFF, GREEN, 0, -HALF, 0, -DIFF, -DIFF, -DIFFP, ORANGE, 0, -2*HALF, 0);
+				var c8 = createCorner(scene, -DIFF, -DIFFP, DIFF, YELLOW, HALF, 0, 0, -DIFFP, -DIFF, DIFF, GREEN, 0, -HALF, 0, -DIFF, -DIFF, DIFFP, RED, 0, 0, 0);
+
+				window.pieces = [
+					m1, m2, m3, m4, m5, m6,
+					e01, e02, e03, e04, e05, e06, e07, e08, e09, e10, e11, e12,
+					c1, c2, c3, c4, c5, c6, c7, c8
+				];
+			}
+
+			createCube(scene, 0, 0, 0);
 
 			var calculateFaces = function(){
 				window.faceR = _.filter(window.pieces, function(piece){
@@ -427,6 +458,43 @@
 				}
 				alert(code);
 				runCode(code);
+			}
+
+			class000 = function(){
+				createCube(window.scene, 0, 0, 0);
+			}
+			class001 = function(){
+				createCube(window.scene, 0, 0, 1);
+			}
+			class010 = function(){
+				createCube(window.scene, 0, 1, 0);
+			}
+			class011 = function(){
+				createCube(window.scene, 0, 1, 1);
+			}
+			class100 = function(){
+				createCube(window.scene, 1, 0, 0);
+			}
+			class101 = function(){
+				createCube(window.scene, 1, 0, 1);
+			}
+			class110 = function(){
+				createCube(window.scene, 1, 1, 0);
+			}
+			class111 = function(){
+				createCube(window.scene, 1, 1, 1);
+			}
+			class200 = function(){
+				createCube(window.scene, 2, 0, 0);
+			}
+			class201 = function(){
+				createCube(window.scene, 2, 0, 1);
+			}
+			class210 = function(){
+				createCube(window.scene, 2, 1, 0);
+			}
+			class211 = function(){
+				createCube(window.scene, 2, 1, 1);
 			}
 
 		</script>
