@@ -7,45 +7,106 @@
 			body { margin: 0; }
 			canvas { width: 100%; height: 100% }
 			div.controls { width: 100%; height: 10% }
+			table{
+				width: 100%;
+			}
+			td{
+				text-align: center;
+			}
+			.button, span {
+		        text-align: center;
+		        margin: 2px;
+		        font-size: x-large;
+		    }
 		</style>
 	</head>
 	<body>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/87/three.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
-		<div class="controls">
-			<a href="javascript:void(0)" onclick="left();">Left</a>
-			<a href="javascript:void(0)" onclick="right();">Right</a>
-			<a href="javascript:void(0)" onclick="up();">Up</a>
-			<a href="javascript:void(0)" onclick="down();">Down</a>
-			<a href="javascript:void(0)" onclick="turnR();">R</a>
-			<a href="javascript:void(0)" onclick="turnRDash();">R'</a>
-			<a href="javascript:void(0)" onclick="turnL();">L</a>
-			<a href="javascript:void(0)" onclick="turnLDash();">L'</a>
-			<a href="javascript:void(0)" onclick="turnU();">U</a>
-			<a href="javascript:void(0)" onclick="turnUDash();">U'</a>
-			<a href="javascript:void(0)" onclick="turnD();">D</a>
-			<a href="javascript:void(0)" onclick="turnDDash();">D'</a>
-			<a href="javascript:void(0)" onclick="turnF();">F</a>
-			<a href="javascript:void(0)" onclick="turnFDash();">F'</a>
-			<a href="javascript:void(0)" onclick="turnB();">B</a>
-			<a href="javascript:void(0)" onclick="turnBDash();">B'</a>
-			<input type="text" id="codeInput"></input>
-			<a href="javascript:void(0)" onclick="execute();">Execute</a>
-			<a href="javascript:void(0)" onclick="scramble();">Scramble</a>
-			<a href="javascript:void(0)" onclick="class000();">Class 000</a>
-			<a href="javascript:void(0)" onclick="class001();">Class 001</a>
-			<a href="javascript:void(0)" onclick="class010();">Class 010</a>
-			<a href="javascript:void(0)" onclick="class011();">Class 011</a>
-			<a href="javascript:void(0)" onclick="class100();">Class 100</a>
-			<a href="javascript:void(0)" onclick="class101();">Class 101</a>
-			<a href="javascript:void(0)" onclick="class110();">Class 110</a>
-			<a href="javascript:void(0)" onclick="class111();">Class 111</a>
-			<a href="javascript:void(0)" onclick="class200();">Class 200</a>
-			<a href="javascript:void(0)" onclick="class201();">Class 201</a>
-			<a href="javascript:void(0)" onclick="class210();">Class 210</a>
-			<a href="javascript:void(0)" onclick="class211();">Class 211</a>
-		</div>
-		<div id="cubeDiv"></div>
+		<table>
+			<tr>
+				<td>
+					<div id="cubeDiv"></div>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div class="controls">
+						<table>
+							<tr>
+								<td>
+									<table>
+										<tr>
+											<td>
+												<button class="button" onclick="scramble();">Scramble</a>
+											</td>
+											<td>
+												<button class="button" onclick="up();">Up</a>
+											</td>
+											<td>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<button class="button" onclick="left();">Left</a>
+											</td>
+											<td>
+												<button class="button" onclick="down();">Down</a>
+											</td>
+											<td>
+												<button class="button" onclick="right();">Right</a>
+											</td>
+										</tr>
+									</table>
+								</td>
+								<td>
+									<table>
+										<tr>
+											<td>
+												<button class="button" onclick="turnU();">U</a>
+												<button class="button" onclick="turnUDash();">U'</a>
+												<button class="button" onclick="turnD();">D</a>
+												<button class="button" onclick="turnDDash();">D'</a>
+												<button class="button" onclick="turnB();">B</a>
+												<button class="button" onclick="turnBDash();">B'</a>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<button class="button" onclick="turnR();">R</a>
+												<button class="button" onclick="turnRDash();">R'</a>
+												<button class="button" onclick="turnL();">L</a>
+												<button class="button" onclick="turnLDash();">L'</a>
+												<button class="button" onclick="turnF();">F</a>
+												<button class="button" onclick="turnFDash();">F'</a>
+											</td>
+										</tr>
+									</table>
+								</td>
+								<td>
+									<table>
+										<tr>
+											<td>
+												<span>Insert code:</span>
+												<input type="text" id="codeInput"></input>
+												<button class="button" onclick="execute();">Execute</button>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<span>Insert class:</span>
+												<input type="text" id="classInput"></input>	
+												<button class="button" onclick="start();">Start</button>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+						</table>
+					</div>
+				</td>
+			</tr>
+		</table>
 		<script>
 			var scene = new THREE.Scene();
 			window.scene = scene;
@@ -443,6 +504,10 @@
 			}
 
 			scramble = function(){
+				var answer = confirm("Are you sure you want to scramble the cube?");
+				if(!answer){
+					return;
+				}
 				var code = "";
 				var last = -2;
 				while(_.size(code) < 20){
@@ -456,45 +521,61 @@
 						last = index;
 					}	
 				}
-				alert(code);
+				//alert(code);
 				runCode(code);
 			}
 
-			class000 = function(){
-				createCube(window.scene, 0, 0, 0);
-			}
-			class001 = function(){
-				createCube(window.scene, 0, 0, 1);
-			}
-			class010 = function(){
-				createCube(window.scene, 0, 1, 0);
-			}
-			class011 = function(){
-				createCube(window.scene, 0, 1, 1);
-			}
-			class100 = function(){
-				createCube(window.scene, 1, 0, 0);
-			}
-			class101 = function(){
-				createCube(window.scene, 1, 0, 1);
-			}
-			class110 = function(){
-				createCube(window.scene, 1, 1, 0);
-			}
-			class111 = function(){
-				createCube(window.scene, 1, 1, 1);
-			}
-			class200 = function(){
-				createCube(window.scene, 2, 0, 0);
-			}
-			class201 = function(){
-				createCube(window.scene, 2, 0, 1);
-			}
-			class210 = function(){
-				createCube(window.scene, 2, 1, 0);
-			}
-			class211 = function(){
-				createCube(window.scene, 2, 1, 1);
+			start = function(){
+				var classCode = document.getElementById('classInput').value;
+				if(classCode == "000"){
+					createCube(window.scene, 0, 0, 0);
+					return;
+				}
+				if(classCode == "001"){
+					createCube(window.scene, 0, 0, 1);
+					return;
+				}
+				if(classCode == "010"){
+					createCube(window.scene, 0, 1, 0);
+					return;
+				}
+				if(classCode == "011"){
+					createCube(window.scene, 0, 1, 1);
+					return;
+				}
+				if(classCode == "100"){
+					createCube(window.scene, 1, 0, 0);
+					return;
+				}
+				if(classCode == "101"){
+					createCube(window.scene, 1, 0, 1);
+					return;
+				}
+				if(classCode == "110"){
+					createCube(window.scene, 1, 1, 0);
+					return;
+				}
+				if(classCode == "111"){
+					createCube(window.scene, 1, 1, 1);
+					return;
+				}
+				if(classCode == "200"){
+					createCube(window.scene, 2, 0, 0);
+					return;
+				}
+				if(classCode == "201"){
+					createCube(window.scene, 2, 0, 1);
+					return;
+				}
+				if(classCode == "210"){
+					createCube(window.scene, 2, 1, 0);
+					return;
+				}
+				if(classCode == "211"){
+					createCube(window.scene, 2, 1, 1);
+					return;
+				}
+				alert("Incorret class code.");
 			}
 
 		</script>
