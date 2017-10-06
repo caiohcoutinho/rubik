@@ -1,0 +1,21 @@
+{
+  "name": "rubik",
+  "version": "0.0.1",
+  "description": "just a rubik",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.13.4"
+  },
+  "engine": {
+    "node": "*",
+    "npm": "*"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/caiohcoutinho/rubik.git"
+  },
+  "author": "Caio Coutinho <caiohcoutinho@gmail.com>"
+}
